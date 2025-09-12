@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Countdown</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      background: #ffffff;
+      /* white background as requested */
+      display: flex;
+      align-items: center;
+      /* Center vertically */
+      justify-content: center;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      height: 100vh;
+      /* Ensure body takes full viewport height */
+      width: 100vw;
+      /* Ensure body takes full viewport width */
+    }
+
+    .wrap {
+      width: 80vmin;
+      /* 80% of the viewport's smaller dimension */
+      height: 80vmin;
+      /* 80% of the viewport's smaller dimension */
+      display: grid;
+      place-items: center;
+      padding: 0;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ring-bg {
+      stroke: #eee;
+    }
+
+    .ring {
+      stroke-linecap: round;
+      stroke-width: 18;
+      stroke: #0a84ff;
+    }
+
+    .center-text {
+      font-size: clamp(16px, 3.6vw, 24px);
+      text-anchor: middle;
+      dominant-baseline: middle;
+      fill: #222;
+      font-weight: 600;
+    }
+
+    /* Put the rings at top starting position (0deg at 12 o'clock) */
+    .rot-rings {
+      transform-origin: 50% 50%;
+      transform: rotate(-90deg);
+    }
+
+    /* responsive container that uses 80% of the smaller viewport dimension */
+    .svg-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- Standalone SVG ring. The animation is driven by JS below. -->
+    <div class="svg-container" aria-hidden="false">
+      <svg viewBox="0 0 300 300" role="img" aria-label="Hourglass stopwatch ring">
+        <defs>
+          <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.06" />
+          </filter>
+        </defs>
+
+        <!-- background ring -->
+        <g class="rot-rings">
+          <circle class="ring-bg" cx="150" cy="150" r="120" fill="none" stroke-width="18"></circle>
+
+          <!-- animated ring (stroke-dasharray/dashoffset toggles) -->
+          <circle id="ring" class="ring" cx="150" cy="150" r="120" fill="none" stroke-width="18" stroke-linecap="round"
+            filter="url(#soft)">
+          </circle>
+        </g>
+
+        <!-- centered text: shows elapsed / remaining seconds -->
+        <text id="timeText" x="150" y="150" class="center-text">0s</text>
+      </svg>
+    </div>
+    <form id="durationForm"
+      style="margin-top:24px; display:flex; gap:8px; align-items:center; justify-content:center; font-size:1.1em;">
+      <input id="durationInput" type="number" min="1" max="3600" value="8"
+        style="width:4em; padding:4px 8px; border:1px solid #ccc; border-radius:6px; font-size:inherit; background:#fafbfc; color:#222; text-align:center; outline:none;" />
+      <label for="durationInput" style="color:#555;">seconds</label>
+      <button type="submit"
+        style="padding:4px 12px; border:none; border-radius:6px; background:#0a84ff; color:#fff; font-weight:500; cursor:pointer; font-size:inherit;">Set</button>
+    </form>
+  </div>
+
+  <script>
+    // Minimalist duration input logic
+    let DURATION_SECONDS = 30;
+    const ringEl = document.getElementById('ring');
+    const textEl = document.getElementById('timeText');
+    const durationInput = document.getElementById('durationInput');
+    const durationForm = document.getElementById('durationForm');
+
+    // radius must match the r attribute on the circle in the SVG
+    const R = 120;
+    const C = 2 * Math.PI * R; // circumference
+
+    // initialize stroke dash so we can reveal by decreasing dashoffset
+    ringEl.setAttribute('stroke-dasharray', C);
+    ringEl.setAttribute('stroke-dashoffset', C);
+
+    let startTime = performance.now();
+    // Pause feature removed
+
+    function tick(now) {
+      const elapsedMs = now - startTime;
+      const progress = (elapsedMs / (DURATION_SECONDS * 1000));
+      const loopProgress = progress - Math.floor(progress);
+      const offset = C * (1 - loopProgress);
+      ringEl.setAttribute('stroke-dashoffset', offset);
+      const remaining = Math.ceil(DURATION_SECONDS - loopProgress * DURATION_SECONDS);
+      textEl.textContent = `${remaining}s`;
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+
+    // Form handler to set duration
+    durationForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const val = parseInt(durationInput.value, 10);
+      if (!isNaN(val) && val > 0 && val <= 3600) {
+        DURATION_SECONDS = val;
+        startTime = performance.now(); // restart timer
+      }
+    });
+
+    // Restart when pressing left or right arrow keys
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
+        e.preventDefault();
+        startTime = performance.now(); // restart timer to 0s
+      }
+    });
+
+  </script>
+</body>
+
+</html>
