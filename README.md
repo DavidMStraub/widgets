@@ -12,6 +12,7 @@ Interactive gallery with live previews of all available widgets.
 
 - **Clock** - Live time display with dark mode
 - **Countdown Timer** - Circular timer for timeboxing exercises
+- **Exam Timer** - Combined countdown and clock for exam supervision
 
 ## Usage
 
