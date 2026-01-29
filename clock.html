@@ -20,6 +20,11 @@
       align-items: center;
       justify-content: center;
       background: #f5f5f5;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: #1a202c;
     }
 
     .clock {
@@ -31,13 +36,91 @@
       line-height: 1;
       text-align: center;
       font-variant-numeric: tabular-nums;
+      transition: color 0.3s ease;
+    }
+
+    body.dark-mode .clock {
+      color: #a0aec0;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 32px;
+      background: #a0aec0;
+      border-radius: 16px;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition: background 0.3s ease;
+    }
+
+    body.dark-mode .theme-toggle {
+      background: #4a5568;
+    }
+
+    .theme-toggle::before {
+      content: '☀️';
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    body.dark-mode .theme-toggle::before {
+      opacity: 0;
+    }
+
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+
+    body.dark-mode .theme-toggle::after {
+      transform: translateX(28px);
+      content: '🌙';
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      line-height: 1;
     }
   </style>
 </head>
 <body>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode"></button>
   <div class="clock" id="clock">--:--</div>
 
   <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Load saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      body.classList.add('dark-mode');
+    }
+
+    // Toggle theme
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      const isDark = body.classList.contains('dark-mode');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+
     function updateClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
