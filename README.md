@@ -1,9 +1,18 @@
-# HTML widgets
+# HTML Widgets
 
-A repository I'm using for small (mostly vibe coded) HTML widgets that can be used in teaching.
+A collection of standalone HTML widgets for teaching.
 
-## Countdown timer ⏳
+## Gallery
 
-A simple countdown timer that can be set to a fixed number of seconds and runs in a loop. Can be used for timeboxing exercises or for timed introduction rounds.
+**[View all widgets →](https://davidstraub.de/widgets/)**
 
-[Open countdown timer](https://davidstraub.de/widgets/countdown.html)
+Interactive gallery with live previews of all available widgets.
+
+## Current Widgets
+
+- **Clock** - Live time display with dark mode
+- **Countdown Timer** - Circular timer for timeboxing exercises
+
+## Usage
+
+All widgets are standalone HTML files. Open any widget directly or browse the gallery at `index.html`.
